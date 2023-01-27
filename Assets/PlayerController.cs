@@ -10,12 +10,15 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 direction;
     private  ParticleSystem particle;
+    private CircleCollider2D attackCollider;
+    public bool IsAttacking => particle.isPlaying;
 
   // Start is called before the first frame update
   void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         particle = GetComponent<ParticleSystem>();
+        attackCollider = GetComponent<CircleCollider2D>();
   }
 
     // Update is called once per frame
@@ -51,7 +54,13 @@ public class PlayerController : MonoBehaviour
 
   void Attack()
 	{
-    if(!particle.isPlaying)
+    if(!IsAttacking)
       particle.Play();
 	}
+  private void OnTriggerStay2D(Collider2D collision)
+  {
+    var enemy = collision.gameObject.GetComponent<Enemy>();
+    if (IsAttacking &&  enemy)
+      enemy.Die();
+  }
 }

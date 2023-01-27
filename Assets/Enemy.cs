@@ -21,4 +21,14 @@ public class Enemy : MonoBehaviour
     {
         destination.target = CharackterManager.instance.GetPlayerTransform();
     }
+
+	  private void OnParticleCollision(GameObject other)
+	  {
+        Die();
+	  }
+
+  public void Die()
+	{
+      Destroy(gameObject);
+  }
 }

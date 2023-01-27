@@ -30,11 +30,6 @@ public class EnemySpawner : MonoBehaviour
         spawnInterval = 0.5f;
     }
 
-    private void Start()
-    {
-        // BeginSpawningEnemies();
-    }
-
     private void Update()
     {
         if (isSpawning)
