@@ -44,7 +44,7 @@ public class EnemySpawner : MonoBehaviour
             {
                 timer = 0f;
                 SpawnEnemy();
-                spawnInterval -= 0.001f * difficulty;
+                spawnInterval *= 1f - 0.001f * difficulty;
             }
         }
     }
