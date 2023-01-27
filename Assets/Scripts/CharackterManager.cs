@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class CharackterManager : MonoBehaviour
 {
+    public static CharackterManager instance;
+
     public GameObject ActivePlayer { get; private set; }
     private PlayerController[] playerControllers;
     private int activePlayerIndex;
@@ -9,6 +11,13 @@ public class CharackterManager : MonoBehaviour
 
     [SerializeField]
     private Cinemachine.CinemachineVirtualCamera vcamera;
+
+    private void Awake()
+    {
+        if (instance)
+            Destroy(this);
+        else instance = this;
+    }
 
     void Start()
     {
@@ -28,6 +37,7 @@ public class CharackterManager : MonoBehaviour
         ChangeActivePlayer();
         SetCanMove(true);
         started = true;
+        EnemySpawner.instance.BeginSpawningEnemies();
     }
 
     private void ChangeActivePlayer()
@@ -51,6 +61,11 @@ public class CharackterManager : MonoBehaviour
     {
         foreach (var player in playerControllers)
             player.canMove = canMove;
+    }
+
+    public Transform GetPlayerTransform()
+    {
+        return ActivePlayer.transform;
     }
 
 }
