@@ -1,9 +1,15 @@
+using System;
 using UnityEngine;
 
 public enum CharacterType { Wizard, Worker };
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField]
+    private Sprite deadSprite;
+    public bool IsDead { get; private set; }
+    public event Action OnDead;
+
     public CharacterType characterType;
     public float speed;
     public bool canMove;
@@ -11,6 +17,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 direction;
     private  ParticleSystem particle;
     private CircleCollider2D attackCollider;
+    private HP hp;
     public bool IsAttacking => particle.isPlaying;
 
   // Start is called before the first frame update
@@ -19,6 +26,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         particle = GetComponent<ParticleSystem>();
         attackCollider = GetComponent<CircleCollider2D>();
+        hp = GetComponent<HP>();
   }
 
     // Update is called once per frame
@@ -60,7 +68,23 @@ public class PlayerController : MonoBehaviour
   private void OnTriggerStay2D(Collider2D collision)
   {
     var enemy = collision.gameObject.GetComponent<Enemy>();
-    if (IsAttacking &&  enemy)
-      enemy.Die();
+    if (!enemy)
+        return;
+        if (IsAttacking)
+            enemy.Die();
+        else
+            TakeDamage();
   }
+
+    private void TakeDamage()
+    {
+        hp.TakeDamage(1);
+        if (hp.CurrentHP <= 0 && !IsDead)
+        {
+            GetComponent<SpriteRenderer>().sprite = deadSprite;
+            canMove = false;
+            IsDead = true;
+            OnDead.Invoke();
+        }
+    }
 }

@@ -1,10 +1,13 @@
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class CharackterManager : MonoBehaviour
 {
     public static CharackterManager instance;
 
     public GameObject ActivePlayer { get; private set; }
+    public UnityEvent OnAllPlayersDead;
     private PlayerController[] playerControllers;
     private int activePlayerIndex;
     private bool started;
@@ -24,6 +27,18 @@ public class CharackterManager : MonoBehaviour
         playerControllers = FindObjectsOfType<PlayerController>();
         ActivePlayer = playerControllers[activePlayerIndex].gameObject;
         SetCanMove(false);
+        foreach(var pc in playerControllers)
+        {
+            pc.OnDead += OnPlayerDead;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        foreach (var pc in playerControllers)
+        {
+            pc.OnDead -= OnPlayerDead;
+        }
     }
 
     private void Update()
@@ -66,6 +81,15 @@ public class CharackterManager : MonoBehaviour
     public Transform GetPlayerTransform()
     {
         return ActivePlayer.transform;
+    }
+
+    private void OnPlayerDead()
+    {
+        if(!playerControllers.Any(pc => !pc.IsDead))
+        {
+            OnAllPlayersDead.Invoke();
+            started = false;
+        }
     }
 
 }
